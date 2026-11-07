@@ -1,0 +1,73 @@
+---
+# title: "Manuscript Analysis"
+format:
+  html:
+    css: "files/style.css"
+    toc: true
+    toc-expand: true
+    toc-depth: 4
+    toc-location: left
+    number-sections: true
+    self-contained: true
+    code-fold: false
+editor_options: 
+  chunk_output_type: console
+execute: 
+  warning: false
+  message: false
+  echo: true
+---
+
+# Project Setup
+
+```{r}
+#| label: setup
+
+source('https://inkaverse.com/setup.r')
+```
+
+# Data import
+
+```{r}
+gs <- "https://docs.google.com/spreadsheets/d/1VN0X6mcPoxDPoT_UZLsGFBOpOptBLTQxihEMyfP1n5I/edit?gid=433364286#gid=433364286" %>% 
+  as_sheets_id()
+
+gs
+
+fb <- gs %>% 
+  range_read(ss = .,sheet = "organizado") %>% 
+  mutate(across(c(1:5), ~ as.factor(.))) 
+
+fb %>% str()
+```
+
+# Boxplot
+
+```{r}
+plot_raw(data = fb, x = "temp", y = "grados_brix"
+         , group = "cultivo")
+```
+
+```{r}
+fb %>% 
+  ggplot(aes(x = temp, y = pH, fill = cultivo)) +
+  geom_boxplot(
+    position = position_dodge(width = 0.8),
+    width = 0.65,
+    alpha = 0.8,
+    outlier.shape = 21
+  ) +
+  labs(
+    x = "Temperatura",
+    y = "pH",
+    fill = "Cultivo"
+  ) +
+  theme_classic() +
+  theme(
+    axis.title = element_text(size = 12, face = "bold"),
+    axis.text = element_text(size = 11, color = "black"),
+    legend.title = element_text(size = 11, face = "bold"),
+    legend.position = "top"
+  )
+```
+
